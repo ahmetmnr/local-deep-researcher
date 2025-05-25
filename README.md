@@ -1,158 +1,122 @@
-# Local Deep Researcher
+# Local Deep Researcher - Flask Web Interface
 
-Local Deep Researcher is a fully local web research assistant that uses any LLM hosted by [Ollama](https://ollama.com/search) or [LMStudio](https://lmstudio.ai/). Give it a topic and it will generate a web search query, gather web search results, summarize the results of web search, reflect on the summary to examine knowledge gaps, generate a new search query to address the gaps, and repeat for a user-defined number of cycles. It will provide the user a final markdown summary with all sources used to generate the summary.
+AI Araştırma Asistanı - [Ollama](https://ollama.com/search) ile çalışan yerel LLM'ler kullanarak web araştırması yapabilen Flask tabanlı web arayüzü.
 
-![ollama-deep-research](https://github.com/user-attachments/assets/1c6b28f8-6b64-42ba-a491-1ab2875d50ea)
+## 🌟 Özellikler
 
-Short summary video:
-<video src="https://github.com/user-attachments/assets/02084902-f067-4658-9683-ff312cab7944" controls></video>
+- **🌐 Web Arayüzü**: Kullanıcı dostu Flask tabanlı web interface
+- **🔍 Otomatik Web Araştırması**: DuckDuckGo ile otomatik arama
+- **🤖 Yerel LLM**: Ollama ile tamamen yerel AI desteği
+- **🇹🇷 Türkçe Destek**: Türkçe araştırma konuları için optimize edilmiş
+- **📊 Gerçek Zamanlı Takip**: Araştırma sürecini canlı izleme
+- **📝 Markdown Çıktı**: Kaynaklarıyla birlikte detaylı rapor
 
-## 📺 Video Tutorials
+![Flask Web Interface](https://via.placeholder.com/800x400/3498DB/ffffff?text=Flask+Web+Interface)
 
-See it in action or build it yourself? Check out these helpful video tutorials:
-- [Overview of Local Deep Researcher with R1](https://www.youtube.com/watch?v=sGUjmyfof4Q) - Load and test [DeepSeek R1](https://api-docs.deepseek.com/news/news250120) [distilled models](https://ollama.com/library/deepseek-r1).
-- [Building Local Deep Researcher from Scratch](https://www.youtube.com/watch?v=XGuTzHoqlj8) - Overview of how this is built.
+## 🚀 Hızlı Başlangıç
 
-## 🚀 Quickstart
-
-Clone the repository:
-```shell
-git clone https://github.com/langchain-ai/local-deep-researcher.git
+### 1. Projeyi İndir
+```bash
+git clone https://github.com/ahmetmnr/local-deep-researcher.git
 cd local-deep-researcher
 ```
 
-Then edit the `.env` file to customize the environment variables according to your needs. These environment variables control the model selection, search tools, and other configuration settings. When you run the application, these values will be automatically loaded via `python-dotenv` (because `langgraph.json` point to the "env" file).
-```shell
+### 2. Ollama Kurulumu
+1. [Ollama](https://ollama.com/download)'yı indir ve kur
+2. Bir LLM modeli çek:
+```bash
+ollama pull llama3.2
+```
+
+### 3. Python Bağımlılıkları
+```bash
+# Sanal ortam oluştur (önerilen)
+python -m venv venv
+venv\Scripts\activate  # Windows
+# source venv/bin/activate  # Linux/Mac
+
+# Bağımlılıkları yükle
+pip install -e .
+```
+
+### 4. Flask Uygulamasını Çalıştır
+```bash
+python app.py
+```
+
+Tarayıcında şu adrese git: **http://localhost:5000**
+
+## 🎯 Kullanım
+
+1. **Araştırma Konusu Gir**: Web arayüzünde araştırmak istediğin konuyu yaz
+   - Örnek: "Türkiye'de yapay zeka kullanımı"
+   - Örnek: "2024 yılı teknoloji trendleri"
+
+2. **Araştırma Başlat**: "Araştır" butonuna tıkla
+
+3. **İlerlemeyi İzle**: Sistem hangi kaynakları incelediğini görebilirsin
+
+4. **Sonuçları İncele**: Araştırma tamamlandığında detaylı raporu görebilirsin
+
+## ⚙️ Yapılandırma
+
+### Çevre Değişkenleri (.env)
+```bash
 cp .env.example .env
 ```
 
-### Selecting local model with Ollama
-
-1. Download the Ollama app for Mac [here](https://ollama.com/download).
-
-2. Pull a local LLM from [Ollama](https://ollama.com/search). As an [example](https://ollama.com/library/deepseek-r1:8b):
-```shell
-ollama pull deepseek-r1:8b
-```
-
-3. Optionally, update the `.env` file with the following Ollama configuration settings. 
-
-* If set, these values will take precedence over the defaults set in the `Configuration` class in `configuration.py`. 
-```shell
+Önemli ayarlar:
+```bash
 LLM_PROVIDER=ollama
-OLLAMA_BASE_URL="http://localhost:11434" # Ollama service endpoint, defaults to `http://localhost:11434` 
-LOCAL_LLM=model # the model to use, defaults to `llama3.2` if not set
+LOCAL_LLM=llama3.2
+OLLAMA_BASE_URL=http://localhost:11434
+SEARCH_API=duckduckgo
+MAX_WEB_RESEARCH_LOOPS=2
+FETCH_FULL_PAGE=true
 ```
 
-### Selecting local model with LMStudio
+### Model Seçenekleri
+- `llama3.2` (önerilen)
+- `llama3.1`
+- `qwen2.5`
+- Diğer Ollama modelleri
 
-1. Download and install LMStudio from [here](https://lmstudio.ai/).
+## 🔧 Gelişmiş Özellikler
 
-2. In LMStudio:
-   - Download and load your preferred model (e.g., qwen_qwq-32b)
-   - Go to the "Local Server" tab
-   - Start the server with the OpenAI-compatible API
-   - Note the server URL (default: http://localhost:1234/v1)
-
-3. Optionally, update the `.env` file with the following LMStudio configuration settings. 
-
-* If set, these values will take precedence over the defaults set in the `Configuration` class in `configuration.py`. 
-```shell
-LLM_PROVIDER=lmstudio
-LOCAL_LLM=qwen_qwq-32b  # Use the exact model name as shown in LMStudio
-LMSTUDIO_BASE_URL=http://localhost:1234/v1
-```
-
-### Selecting search tool
-
-By default, it will use [DuckDuckGo](https://duckduckgo.com/) for web search, which does not require an API key. But you can also use [SearXNG](https://docs.searxng.org/), [Tavily](https://tavily.com/) or [Perplexity](https://www.perplexity.ai/hub/blog/introducing-the-sonar-pro-api) by adding their API keys to the environment file. Optionally, update the `.env` file with the following search tool configuration and API keys. If set, these values will take precedence over the defaults set in the `Configuration` class in `configuration.py`. 
-```shell
-SEARCH_API=xxx # the search API to use, such as `duckduckgo` (default)
-TAVILY_API_KEY=xxx # the tavily API key to use
-PERPLEXITY_API_KEY=xxx # the perplexity API key to use
-MAX_WEB_RESEARCH_LOOPS=xxx # the maximum number of research loop steps, defaults to `3`
-FETCH_FULL_PAGE=xxx # fetch the full page content (with `duckduckgo`), defaults to `false`
-```
-
-### Running with LangGraph Studio
-
-#### Mac
-
-1. (Recommended) Create a virtual environment:
+### LangGraph Studio ile Kullanım
+Gelişmiş görselleştirme için:
 ```bash
-python -m venv .venv
-source .venv/bin/activate
-```
-
-2. Launch LangGraph server:
-
-```bash
-# Install uv package manager
-curl -LsSf https://astral.sh/uv/install.sh | sh
-uvx --refresh --from "langgraph-cli[inmem]" --with-editable . --python 3.11 langgraph dev
-```
-
-#### Windows
-
-1. (Recommended) Create a virtual environment: 
-
-* Install `Python 3.11` (and add to PATH during installation). 
-* Restart your terminal to ensure Python is available, then create and activate a virtual environment:
-
-```powershell
-python -m venv .venv
-.venv\Scripts\Activate.ps1
-```
-
-2. Launch LangGraph server:
-
-```powershell
-# Install dependencies
-pip install -e .
-pip install -U "langgraph-cli[inmem]"            
-
-# Start the LangGraph server
+pip install -U "langgraph-cli[inmem]"
 langgraph dev
 ```
 
-### Using the LangGraph Studio UI
-
-When you launch LangGraph server, you should see the following output and Studio will open in your browser:
-> Ready!
-
-> API: http://127.0.0.1:2024
-
-> Docs: http://127.0.0.1:2024/docs
-
-> LangGraph Studio Web UI: https://smith.langchain.com/studio/?baseUrl=http://127.0.0.1:2024
-
-Open `LangGraph Studio Web UI` via the URL above. In the `configuration` tab, you can directly set various assistant configurations. Keep in mind that the priority order for configuration values is:
-
-```
-1. Environment variables (highest priority)
-2. LangGraph UI configuration
-3. Default values in the Configuration class (lowest priority)
+### Docker ile Çalıştırma
+```bash
+docker build -t local-deep-researcher .
+docker run -p 5000:5000 local-deep-researcher
 ```
 
-<img width="1621" alt="Screenshot 2025-01-24 at 10 08 31 PM" src="https://github.com/user-attachments/assets/7cfd0e04-28fd-4cfa-aee5-9a556d74ab21" />
+## 📁 Proje Yapısı
 
-Give the assistant a topic for research, and you can visualize its process!
+```
+local-deep-researcher/
+├── app.py                    # Flask web uygulaması
+├── templates/
+│   └── index.html           # Web arayüzü
+├── ollama_deep_researcher/  # Ana araştırma modülü
+├── pyproject.toml          # Python bağımlılıkları
+├── .env.example           # Örnek yapılandırma
+└── README.md             # Bu dosya
+```
 
-<img width="1621" alt="Screenshot 2025-01-24 at 10 08 22 PM" src="https://github.com/user-attachments/assets/4de6bd89-4f3b-424c-a9cb-70ebd3d45c5f" />
+## 🛠️ Nasıl Çalışır
 
-### Model Compatibility Note
-
-When selecting a local LLM, set steps use structured JSON output. Some models may have difficulty with this requirement, and the assistant has fallback mechanisms to handle this. As an example, the [DeepSeek R1 (7B)](https://ollama.com/library/deepseek-llm:7b) and [DeepSeek R1 (1.5B)](https://ollama.com/library/deepseek-r1:1.5b) models have difficulty producing required JSON output, and the assistant will use a fallback mechanism to handle this.
-  
-### Browser Compatibility Note
-
-When accessing the LangGraph Studio UI:
-- Firefox is recommended for the best experience
-- Safari users may encounter security warnings due to mixed content (HTTPS/HTTP)
-- If you encounter issues, try:
-  1. Using Firefox or another browser
-  2. Disabling ad-blocking extensions
-  3. Checking browser console for specific error messages
+1. **Sorgu Oluşturma**: Kullanıcı konusundan web arama sorgusu üretir
+2. **Web Arama**: DuckDuckGo ile ilgili kaynakları bulur
+3. **İçerik Analizi**: Bulunan kaynakların içeriğini özetler
+4. **Bilgi Boşlukları**: Eksik bilgileri tespit eder
+5. **Tekrarlı Arama**: Eksiklikleri gidermek için yeni aramalar yapar
+6. **Final Rapor**: Tüm bulguları markdown formatında sunar
 
 ## How it works
 
